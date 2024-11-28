@@ -90,22 +90,21 @@ END
 
 GO
 IF NOT EXISTS (SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE
-    TABLE_SCHEMA = 'ingenieria_informatica' AND TABLE_NAME = 'rama_carrera')
+    TABLE_SCHEMA = 'ingenieria_informatica' AND TABLE_NAME = 'historia_academica')
 BEGIN
-    CREATE TABLE [ingenieria_informatica].[Academic_History]
+    CREATE TABLE [ingenieria_informatica].[historia_academica]
     (
         id 				INT 	IDENTITY,
         fecha_log 		DATE 	NOT NULL,
         codigo_materia 	INT 	NOT NULL,
         id_descripcion 	INT 	NOT NULL,
-        CONSTRAINT PK_Academic_History 
+        CONSTRAINT PK_historial_academico
             PRIMARY KEY(id),
         CONSTRAINT FK_Descripcion 
-            FOREIGN KEY(descripcion) 
+            FOREIGN KEY(id_descripcion) 
             REFERENCES [ingenieria_informatica].[Informacion](id),
         CONSTRAINT FK_materia_historial
             FOREIGN KEY (codigo_materia) 
             REFERENCES [ingenieria_informatica].[materia](codigo_materia)
     );
 END 
-
