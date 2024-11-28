@@ -24,7 +24,7 @@ BEGIN
     (
         id 					INT 		NOT NULL 	IDENTITY,
         branch_description 	VARCHAR(70) NOT NULL,
-        CONSTRAINT PK_ID_Branch 
+        CONSTRAINT PK_id_rama_carrera
             PRIMARY KEY(id)
     );
 END
@@ -38,7 +38,7 @@ BEGIN
     (
         id 				INT 		NOT NULL IDENTITY,
         descripcion 	VARCHAR(25) NOT NULL,
-        CONSTRAINT PK_id_course_state 
+        CONSTRAINT PK_id_informacion 
             PRIMARY KEY(id)
     );
 END
@@ -58,11 +58,11 @@ BEGIN
         notaFinal 			INT,
         CONSTRAINT PK_course_codigo_materia 
             PRIMARY KEY(codigo_materia),
-        CONSTRAINT FK_course_state 
-            FOREIGN KEY(id_state) 
+        CONSTRAINT FK_estado_materia
+            FOREIGN KEY(id_estado) 
             REFERENCES [ingenieria_informatica].[Informacion](id),
-        CONSTRAINT FK_course_branch 
-            FOREIGN KEY(id_branch) 
+        CONSTRAINT FK_rama_materia
+            FOREIGN KEY(id_rama_materia) 
             REFERENCES [ingenieria_informatica].[rama_carrera](id)
     );
 END
