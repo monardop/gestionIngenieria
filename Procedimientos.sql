@@ -174,4 +174,55 @@ BEGIN
 	ORDER BY anio
 END
 
+GO 
+CREATE OR ALTER PROCEDURE generar_registro_historial
+@codMateria INT,
+@Fecha DATE = NULL,
+@Condicion INT,
+@Nota INT = 0
+AS
+BEGIN
+	IF NOT EXISTS (
+		SELECT 1 
+		FROM [ingenieria_informatica].[materia] 
+		WHERE codigo_materia =  @codMateria
+	) OR @Condicion NOT BETWEEN 5 AND 9
+	BEGIN
+		RAISERROR('Ingreso de datos incorrectos',10,1);
+	END
+	ELSE BEGIN
+	-- En caso de que no cargue fecha
+	DECLARE @FechaHoy DATE = GETDATE();
+	IF @Fecha IS NULL
+		SET @Fecha = @FechaHoy;
+	
+	-- Casos especiales
+	IF @Condicion = 5 -- Regularizada
+	BEGIN
+		UPDATE [ingenieria_informatica].[materia]
+			SET
+				id_estado = 5
+			WHERE 
+				codigo_materia = @codMateria;
+		-- Elimino la materia como correlativa.
+			DELETE [ingenieria_informatica].[correlativa]
+				WHERE codigo_materia_correlativa = @codMateria;
+		-- Habilito las materias correspondientes
+			EXEC habilitar_materias;
+	END
+	ELSE IF @Condicion = 6 or @Condicion = 7
+	BEGIN
+		EXEC MateriaAprobada @codMateria, @Nota;
+	END
+
+	-- Para todos los casos
+	INSERT INTO [ingenieria_informatica].[historia_academica] 
+	(fecha_log, codigo_materia, id_descripcion) VALUES
+		(@Fecha, @codMateria, @Condicion);
+	END
+
+
+END
+
+
 exec habilitar_materias;
