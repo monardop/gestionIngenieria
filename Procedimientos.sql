@@ -22,6 +22,20 @@ AS
 	WHERE id_estado = 4;
 
 GO
+CREATE OR ALTER VIEW ver_historial_academico
+AS
+	SELECT 
+		ha.fecha_log,
+		m.nombre,
+		info.descripcion,
+		m.notaFinal
+	FROM [ingenieria_informatica].[historia_academica] ha
+	JOIN [ingenieria_informatica].[materia] m 
+		ON ha.codigo_materia = m.codigo_materia
+	JOIN [ingenieria_informatica].[Informacion] info 
+		ON info.id = ha.id_descripcion
+
+GO
 CREATE OR ALTER PROCEDURE habilitar_materias
 AS
 BEGIN
