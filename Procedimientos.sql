@@ -259,9 +259,9 @@ AS
 BEGIN
 	SELECT 
 		fecha_log, nombre, descripcion,
-		COALESCE(notaFinal, '---') AS Nota	
+		COALESCE(CAST(notaFinal AS CHAR(3)), '---') AS Nota	
 	FROM ver_historial_academico
-	ORDER BY descripcion;
+	ORDER BY descripcion, fecha_log;
 END
 
 exec habilitar_materias;
