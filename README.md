@@ -45,7 +45,7 @@ Guía paso a paso para instalar y ejecutar el proyecto:
 1. Clona este repositorio
 2. Ejecuta los archivos en el orden correspondiente 
 ```powershell
-git clone https://github.com/tu_usuario/gestor-academico.git 
+git clone https://github.com/monardop/gestionIngenieria
 cd gestor-academico
 CreationFile.sql
 CargarDatos.sql
