@@ -87,14 +87,14 @@ BEGIN
 			SELECT
 				id_rama_materia,
 				CASE id_rama_materia
-                WHEN 1 THEN 'Ciencias Básicas'
-                WHEN 2 THEN 'Desarrollo de Software'
-                WHEN 3 THEN 'Infraestructura'
-                WHEN 4 THEN 'Programación'
-                WHEN 5 THEN 'Calidad y seguridad de la Información'
-                WHEN 6 THEN 'Gestión y complementarias'
-                WHEN 7 THEN 'Transversales'
-            END AS RamaCarrera
+					WHEN 1 THEN 'Ciencias Básicas'
+					WHEN 2 THEN 'Desarrollo de Software'
+					WHEN 3 THEN 'Infraestructura'
+					WHEN 4 THEN 'Programación'
+					WHEN 5 THEN 'Calidad y seguridad de la Información'
+					WHEN 6 THEN 'Gestión y complementarias'
+					WHEN 7 THEN 'Transversales'
+            	END AS RamaCarrera
 			FROM ingenieria_informatica.materia
 			GROUP BY id_rama_materia
 		)
@@ -283,6 +283,66 @@ BEGIN
 		VALUES
 			(GETDATE(), @codMateria, 3);
 	END
+END
+
+GO
+CREATE OR ALTER PROCEDURE finalizar_materia_cursada
+	@codMateria INT,
+	@estado INT,
+	@nota INT = 0,
+	@FechaFinalizada DATE = NULL
+AS
+BEGIN
+	IF NOT EXISTS (
+		SELECT 1 
+		FROM [ingenieria_informatica].[historia_academica] 
+		WHERE codigo_materia = @codMateria
+	)
+	BEGIN
+		RAISERROR('O no está en curso o no está bien el código de la materia.',12,1);
+		RETURN;
+	END
+	IF @estado NOT IN (5,6,9,10)
+	BEGIN
+		RAISERROR('El estado ingresado es incorrecto',12,1);
+		RETURN;
+	END
+
+	DECLARE @fecha DATE = GETDATE();
+	IF @FechaFinalizada IS NULL 
+		SET @FechaFinalizada = @fecha
+
+	IF @estado = 5 -- Regularizada
+		BEGIN
+			UPDATE [ingenieria_informatica].[materia]
+			SET
+				id_estado = 5
+			WHERE 
+				codigo_materia = @codMateria;
+			-- Elimino la materia como correlativa.
+			DELETE [ingenieria_informatica].[correlativa]
+				WHERE codigo_materia_correlativa = @codMateria;
+			-- Habilito las materias correspondientes
+			EXEC habilitar_materias;
+		END
+
+	ELSE IF @estado = 6 -- Promocionada
+		BEGIN
+			BEGIN TRY
+				EXEC MateriaAprobada @codMateria, @Nota;
+			END TRY
+			BEGIN CATCH
+				RAISERROR('Los parametros ingresados fueron erróneos.',12,1);
+				RETURN;
+			END CATCH
+		END
+	
+	UPDATE [ingenieria_informatica].[historia_academica]
+		SET 
+			fecha_log = @FechaFinalizada,
+			id_descripcion = @estado
+		WHERE 
+			codigo_materia = @codMateria
 END
 
 exec habilitar_materias;
