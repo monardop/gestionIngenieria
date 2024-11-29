@@ -264,4 +264,25 @@ BEGIN
 	ORDER BY descripcion, fecha_log;
 END
 
+GO 
+CREATE OR ALTER PROCEDURE set_materia_en_curso
+	@codMateria INT
+AS
+BEGIN
+	IF NOT EXISTS ( SELECT 1 FROM [ingenieria_informatica].[materia] WHERE codigo_materia =  @codMateria)
+		BEGIN
+			RAISERROR ('Parámetros ingresados de forma errónea',12,1);
+		END
+	ELSE BEGIN
+		UPDATE [ingenieria_informatica].[materia]
+			SET id_estado = 3
+			WHERE codigo_materia = @codMateria;
+		
+		INSERT INTO [ingenieria_informatica].[historia_academica]
+			(fecha_log, codigo_materia, id_descripcion)
+		VALUES
+			(GETDATE(), @codMateria, 3);
+	END
+END
+
 exec habilitar_materias;
