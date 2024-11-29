@@ -45,7 +45,21 @@ BEGIN
 	EXEC habilitar_materias;
 END
 
+GO
+CREATE OR ALTER PROCEDURE ver_progreso_por_ramas
+AS
+BEGIN
+	SELECT * FROM lista_materias 
+	ORDER BY RamaCarrera
+END
 
+GO
+CREATE OR ALTER PROCEDURE ver_progreso_por_anio
+AS
+BEGIN
+	SELECT * FROM lista_materias 
+	ORDER BY anio;
+END	
 
 exec habilitar_materias;
 
