@@ -21,7 +21,6 @@ AS
 	FROM [ingenieria_informatica].[materia]
 	WHERE id_estado = 4;
 
-
 GO
 CREATE OR ALTER PROCEDURE habilitar_materias
 AS
@@ -45,7 +44,7 @@ BEGIN
 		WHERE codigo_materia =  @codMateria)
 		OR @nota NOT BETWEEN 4 AND 10
 		BEGIN
-		RAISERROR ('Parámetros ingresados de forma errónea',10,1);
+		RAISERROR ('Parámetros ingresados de forma errónea',12,1);
 	END
 		ELSE BEGIN
 		-- Pongo la nota y cambio el estado a Aprobado
@@ -199,7 +198,7 @@ BEGIN
 		WHERE codigo_materia =  @codMateria
 	) OR @Condicion NOT BETWEEN 5 AND 9
 	BEGIN
-		RAISERROR('Ingreso de datos incorrectos',10,1);
+		RAISERROR('Ingreso de datos incorrectos',12,1);
 	END
 	ELSE BEGIN
 		-- En caso de que no cargue fecha
@@ -209,21 +208,27 @@ BEGIN
 
 		-- Casos especiales
 		IF @Condicion = 5 -- Regularizada
-	BEGIN
-			UPDATE [ingenieria_informatica].[materia]
-			SET
-				id_estado = 5
-			WHERE 
-				codigo_materia = @codMateria;
-			-- Elimino la materia como correlativa.
-			DELETE [ingenieria_informatica].[correlativa]
-				WHERE codigo_materia_correlativa = @codMateria;
-			-- Habilito las materias correspondientes
-			EXEC habilitar_materias;
-		END
-	ELSE IF @Condicion = 6 or @Condicion = 7
-	BEGIN
-			EXEC MateriaAprobada @codMateria, @Nota;
+			BEGIN
+				UPDATE [ingenieria_informatica].[materia]
+				SET
+					id_estado = 5
+				WHERE 
+					codigo_materia = @codMateria;
+				-- Elimino la materia como correlativa.
+				DELETE [ingenieria_informatica].[correlativa]
+					WHERE codigo_materia_correlativa = @codMateria;
+				-- Habilito las materias correspondientes
+				EXEC habilitar_materias;
+			END
+		ELSE IF @Condicion = 6 or @Condicion = 7
+		BEGIN
+				BEGIN TRY
+					EXEC MateriaAprobada @codMateria, @Nota;
+				END TRY
+				BEGIN CATCH
+					RAISERROR('Los parametros ingresados fueron erróneos.',12,1);
+					RETURN;
+				END CATCH
 		END
 
 		-- Para todos los casos
@@ -232,8 +237,8 @@ BEGIN
 		VALUES
 			(@Fecha, @codMateria, @Condicion);
 	END
-
 END
+
 
 
 exec habilitar_materias;
