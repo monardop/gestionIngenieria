@@ -22,8 +22,8 @@ VALUES
     ('Promocionada'),            --6
     ('Final Aprobado'),          --7
     ('Final Desaprobado'),       --8
-    ('Materia Desaprobada')      --9
-
+    ('Materia Desaprobada'),     --9
+    ('Materia Abandonada')       --10
 GO
 INSERT INTO [ingenieria_informatica].[materia]
     (codigo_materia, nombre, id_rama_materia, id_estado, anio)
