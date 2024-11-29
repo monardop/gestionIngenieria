@@ -38,9 +38,10 @@ CREATE OR ALTER PROCEDURE MateriaAprobada
 	@nota		INT
 AS
 BEGIN
-	IF NOT EXISTS (SELECT 1 FROM [ingenieria_informatica].[materia] WHERE codigo_materia =  @codMateria)
+	IF NOT EXISTS (SELECT 1 FROM [ingenieria_informatica].[materia] WHERE codigo_materia =  @codMateria) 
+	OR @nota NOT BETWEEN 4 AND 10
 		BEGIN
-			RAISERROR ('Código de materia erróneo',10,1);
+			RAISERROR ('Parámetros ingresados de forma errónea',10,1);
 		END
 		ELSE BEGIN
 		-- Pongo la nota y cambio el estado a Aprobado
