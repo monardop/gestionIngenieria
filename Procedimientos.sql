@@ -1,28 +1,30 @@
 USE Universidad;
 
 GO
-CREATE OR ALTER VIEW lista_materias AS
-	SELECT 
+CREATE OR ALTER VIEW lista_materias
+AS
+	SELECT
 		materia.codigo_materia AS Codigo,
 		rc.nombre AS RamaCarrera ,
-		materia.nombre, 
-		info.descripcion as EstadoMateria, 
-		materia.anio, 
+		materia.nombre,
+		info.descripcion as EstadoMateria,
+		materia.anio,
 		materia.notaFinal
 	FROM [ingenieria_informatica].[materia] materia
 		JOIN [ingenieria_informatica].[rama_carrera] rc ON materia.id_rama_materia = rc.id
 		JOIN [ingenieria_informatica].[Informacion] info ON materia.id_estado = info.id
 
 GO
-CREATE OR ALTER VIEW materias_aprobadas AS
+CREATE OR ALTER VIEW materias_aprobadas
+AS
 	SELECT codigo_materia, nombre, notaFinal, anio
 	FROM [ingenieria_informatica].[materia]
 	WHERE id_estado = 4;
 
 
-GO 
+GO
 CREATE OR ALTER PROCEDURE habilitar_materias
-AS 
+AS
 BEGIN
 	UPDATE [ingenieria_informatica].[materia] 
 	SET id_estado = 2
@@ -38,35 +40,40 @@ CREATE OR ALTER PROCEDURE MateriaAprobada
 	@nota		INT
 AS
 BEGIN
-	IF NOT EXISTS (SELECT 1 FROM [ingenieria_informatica].[materia] WHERE codigo_materia =  @codMateria) 
-	OR @nota NOT BETWEEN 4 AND 10
+	IF NOT EXISTS (SELECT 1
+		FROM [ingenieria_informatica].[materia]
+		WHERE codigo_materia =  @codMateria)
+		OR @nota NOT BETWEEN 4 AND 10
 		BEGIN
-			RAISERROR ('Parámetros ingresados de forma errónea',10,1);
-		END
+		RAISERROR ('Parámetros ingresados de forma errónea',10,1);
+	END
 		ELSE BEGIN
 		-- Pongo la nota y cambio el estado a Aprobado
-			UPDATE [ingenieria_informatica].[materia]
+		UPDATE [ingenieria_informatica].[materia]
 			SET
 				id_estado = 4,
 				notaFinal = @nota
 			WHERE 
 				codigo_materia = @codMateria;
 		-- Elimino la materia como correlativa.
-			DELETE [ingenieria_informatica].[correlativa]
+		DELETE [ingenieria_informatica].[correlativa]
 			WHERE codigo_materia_correlativa = @codMateria;
 		-- Habilito las materias correspondientes
-			EXEC habilitar_materias;
-		END
+		EXEC habilitar_materias;
+	END
 END
 
 GO
 CREATE OR ALTER PROCEDURE ver_progreso_por_ramas
 AS
 BEGIN
-	WITH Ramas AS (
-        SELECT 
-            id_rama_materia,
-            CASE id_rama_materia
+	WITH
+		Ramas
+		AS
+		(
+			SELECT
+				id_rama_materia,
+				CASE id_rama_materia
                 WHEN 1 THEN 'Ciencias Básicas'
                 WHEN 2 THEN 'Desarrollo de Software'
                 WHEN 3 THEN 'Infraestructura'
@@ -75,46 +82,49 @@ BEGIN
                 WHEN 6 THEN 'Gestión y complementarias'
                 WHEN 7 THEN 'Transversales'
             END AS RamaCarrera
-        FROM ingenieria_informatica.materia
-        GROUP BY id_rama_materia
-    )
-    SELECT 
-        Ramas.RamaCarrera,
-        AVG(m.notaFinal)        AS Promedio,
-        COUNT(m.notaFinal)      AS MateriasAprobadas,
-        COUNT(m.codigo_materia) AS CantidadMaterias,
+			FROM ingenieria_informatica.materia
+			GROUP BY id_rama_materia
+		)
+	SELECT
+		Ramas.RamaCarrera,
+		AVG(m.notaFinal)        AS Promedio,
+		COUNT(m.notaFinal)      AS MateriasAprobadas,
+		COUNT(m.codigo_materia) AS CantidadMaterias,
 		CONCAT(ROUND(COUNT(m.notaFinal) * 100 / COUNT(m.codigo_materia), 0), '%') AS Progreso
-    FROM ingenieria_informatica.materia m
-    INNER JOIN Ramas ON m.id_rama_materia = Ramas.id_rama_materia
-    GROUP BY Ramas.RamaCarrera
+	FROM ingenieria_informatica.materia m
+		INNER JOIN Ramas ON m.id_rama_materia = Ramas.id_rama_materia
+	GROUP BY Ramas.RamaCarrera
 END
 
 GO
 CREATE OR ALTER PROCEDURE ver_progreso_por_anio
 AS
 BEGIN
-	WITH Anios AS (
-        SELECT 
-            anio,
-            CASE anio
+	WITH
+		Anios
+		AS
+		(
+			SELECT
+				anio,
+				CASE anio
                 WHEN 1 THEN 'Primero'
                 WHEN 2 THEN 'Segundo'
                 WHEN 3 THEN 'Tercero'
                 WHEN 4 THEN 'Cuarto'
                 WHEN 5 THEN 'Quinto'
             END AS AnioCarrera
-        FROM ingenieria_informatica.materia
-        GROUP BY anio
-    )
-    SELECT 
-        Anios.AnioCarrera 		AS AñoCarrera,
-        AVG(m.notaFinal)        AS Promedio,
-        COUNT(m.notaFinal)      AS MateriasAprobadas,
-        COUNT(m.codigo_materia) AS CantidadMaterias,
+			FROM ingenieria_informatica.materia
+			GROUP BY anio
+		)
+	SELECT
+		Anios.AnioCarrera 		AS AñoCarrera,
+		AVG(m.notaFinal)        AS Promedio,
+		COUNT(m.notaFinal)      AS MateriasAprobadas,
+		COUNT(m.codigo_materia) AS CantidadMaterias,
 		CONCAT(ROUND(COUNT(m.notaFinal) * 100 / COUNT(m.codigo_materia), 0), '%') AS Progreso
-    FROM ingenieria_informatica.materia m
-    INNER JOIN Anios ON m.anio = anios.anio
-    GROUP BY Anios.AnioCarrera
+	FROM ingenieria_informatica.materia m
+		INNER JOIN Anios ON m.anio = anios.anio
+	GROUP BY Anios.AnioCarrera
 	ORDER BY
 		CASE Anios.AnioCarrera
                 WHEN 'Primero' THEN 1
@@ -127,100 +137,101 @@ END
 
 GO
 CREATE OR ALTER PROCEDURE ver_promedio
-AS 
+AS
 BEGIN
-	SELECT 	
-		'Técnico Universitario en Desarrollo de Software' AS Titulo,
-		AVG(notaFinal) AS Promedio
-	FROM [ingenieria_informatica].[materia] 
-	WHERE anio < 4
+			SELECT
+			'Técnico Universitario en Desarrollo de Software' AS Titulo,
+			AVG(notaFinal) AS Promedio
+		FROM [ingenieria_informatica].[materia]
+		WHERE anio < 4
 	UNION ALL
-	SELECT 
-		'Ingeniero Informático' AS Titulo,
-		AVG(notaFinal) AS Promedio
-	FROM [ingenieria_informatica].[materia]
+		SELECT
+			'Ingeniero Informático' AS Titulo,
+			AVG(notaFinal) AS Promedio
+		FROM [ingenieria_informatica].[materia]
 END
 
 GO
 CREATE OR ALTER PROCEDURE ver_avance_segun_titulo
-AS 
+AS
 BEGIN
-	SELECT 	
-		'Técnico Universitario en Desarrollo de Software' AS Titulo,
-		CONCAT(COUNT(codigo_materia), ' de 42') AS Avance,
-		CONCAT(ROUND(COUNT(codigo_materia) * 100 / 42, 2) , '% finalizado') AS Porcentaje
-	FROM materias_aprobadas
-	WHERE anio < 4
+			SELECT
+			'Técnico Universitario en Desarrollo de Software' AS Titulo,
+			CONCAT(COUNT(codigo_materia), ' de 42') AS Avance,
+			CONCAT(ROUND(COUNT(codigo_materia) * 100 / 42, 2) , '% finalizado') AS Porcentaje
+		FROM materias_aprobadas
+		WHERE anio < 4
 	UNION ALL
-	SELECT 
-		'Ingeniero Informático' AS Titulo,
-		CONCAT(COUNT(codigo_materia), ' de 62') AS Avance,
-		CONCAT(ROUND(COUNT(codigo_materia) * 100 / 62, 2), '% finalizado') AS Porcentaje
-	FROM materias_aprobadas
+		SELECT
+			'Ingeniero Informático' AS Titulo,
+			CONCAT(COUNT(codigo_materia), ' de 62') AS Avance,
+			CONCAT(ROUND(COUNT(codigo_materia) * 100 / 62, 2), '% finalizado') AS Porcentaje
+		FROM materias_aprobadas
 END
 
 GO
 CREATE OR ALTER PROCEDURE ver_materias_adeudadas
 AS
 BEGIN
-	SELECT 
+	SELECT
 		Codigo,
 		RamaCarrera ,
-		nombre, 
-		EstadoMateria, 
+		nombre,
+		EstadoMateria,
 		anio AS Año
 	FROM lista_materias
-	WHERE codigo NOT IN (SELECT codigo_materia FROM materias_aprobadas)
+	WHERE codigo NOT IN (SELECT codigo_materia
+	FROM materias_aprobadas)
 	ORDER BY anio
 END
 
-GO 
+GO
 CREATE OR ALTER PROCEDURE generar_registro_historial
-@codMateria INT,
-@Fecha DATE = NULL,
-@Condicion INT,
-@Nota INT = 0
+	@codMateria INT,
+	@Fecha DATE = NULL,
+	@Condicion INT,
+	@Nota INT = 0
 AS
 BEGIN
 	IF NOT EXISTS (
-		SELECT 1 
-		FROM [ingenieria_informatica].[materia] 
+		SELECT 1
+		FROM [ingenieria_informatica].[materia]
 		WHERE codigo_materia =  @codMateria
 	) OR @Condicion NOT BETWEEN 5 AND 9
 	BEGIN
 		RAISERROR('Ingreso de datos incorrectos',10,1);
 	END
 	ELSE BEGIN
-	-- En caso de que no cargue fecha
-	DECLARE @FechaHoy DATE = GETDATE();
-	IF @Fecha IS NULL
+		-- En caso de que no cargue fecha
+		DECLARE @FechaHoy DATE = GETDATE();
+		IF @Fecha IS NULL
 		SET @Fecha = @FechaHoy;
-	
-	-- Casos especiales
-	IF @Condicion = 5 -- Regularizada
+
+		-- Casos especiales
+		IF @Condicion = 5 -- Regularizada
 	BEGIN
-		UPDATE [ingenieria_informatica].[materia]
+			UPDATE [ingenieria_informatica].[materia]
 			SET
 				id_estado = 5
 			WHERE 
 				codigo_materia = @codMateria;
-		-- Elimino la materia como correlativa.
+			-- Elimino la materia como correlativa.
 			DELETE [ingenieria_informatica].[correlativa]
 				WHERE codigo_materia_correlativa = @codMateria;
-		-- Habilito las materias correspondientes
+			-- Habilito las materias correspondientes
 			EXEC habilitar_materias;
-	END
+		END
 	ELSE IF @Condicion = 6 or @Condicion = 7
 	BEGIN
-		EXEC MateriaAprobada @codMateria, @Nota;
-	END
+			EXEC MateriaAprobada @codMateria, @Nota;
+		END
 
-	-- Para todos los casos
-	INSERT INTO [ingenieria_informatica].[historia_academica] 
-	(fecha_log, codigo_materia, id_descripcion) VALUES
-		(@Fecha, @codMateria, @Condicion);
+		-- Para todos los casos
+		INSERT INTO [ingenieria_informatica].[historia_academica]
+			(fecha_log, codigo_materia, id_descripcion)
+		VALUES
+			(@Fecha, @codMateria, @Condicion);
 	END
-
 
 END
 
