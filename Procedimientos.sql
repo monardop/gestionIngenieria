@@ -3,6 +3,7 @@ USE Universidad;
 GO
 CREATE OR ALTER VIEW lista_materias AS
 	SELECT 
+		materia.codigo_materia AS Codigo,
 		rc.nombre AS RamaCarrera ,
 		materia.nombre, 
 		info.descripcion as EstadoMateria, 
@@ -37,19 +38,24 @@ CREATE OR ALTER PROCEDURE MateriaAprobada
 	@nota		INT
 AS
 BEGIN
-
--- Pongo la nota y cambio el estado a Aprobado
-	UPDATE [ingenieria_informatica].[materia]
-	SET
-		id_estado = 4,
-		notaFinal = @nota
-	WHERE 
-		codigo_materia = @codMateria;
--- Elimino la materia como correlativa.
-	DELETE [ingenieria_informatica].[correlativa]
-	WHERE codigo_materia_correlativa = @codMateria;
-
-	EXEC habilitar_materias;
+	IF NOT EXISTS (SELECT 1 FROM [ingenieria_informatica].[materia] WHERE codigo_materia =  @codMateria)
+		BEGIN
+			RAISERROR ('Código de materia erróneo',10,1);
+		END
+		ELSE BEGIN
+		-- Pongo la nota y cambio el estado a Aprobado
+			UPDATE [ingenieria_informatica].[materia]
+			SET
+				id_estado = 4,
+				notaFinal = @nota
+			WHERE 
+				codigo_materia = @codMateria;
+		-- Elimino la materia como correlativa.
+			DELETE [ingenieria_informatica].[correlativa]
+			WHERE codigo_materia_correlativa = @codMateria;
+		-- Habilito las materias correspondientes
+			EXEC habilitar_materias;
+		END
 END
 
 GO
@@ -150,6 +156,21 @@ BEGIN
 		CONCAT(COUNT(codigo_materia), ' de 62') AS Avance,
 		CONCAT(ROUND(COUNT(codigo_materia) * 100 / 62, 2), '% finalizado') AS Porcentaje
 	FROM materias_aprobadas
+END
+
+GO
+CREATE OR ALTER PROCEDURE ver_materias_adeudadas
+AS
+BEGIN
+	SELECT 
+		Codigo,
+		RamaCarrera ,
+		nombre, 
+		EstadoMateria, 
+		anio AS Año
+	FROM lista_materias
+	WHERE codigo NOT IN (SELECT codigo_materia FROM materias_aprobadas)
+	ORDER BY anio
 END
 
 exec habilitar_materias;
