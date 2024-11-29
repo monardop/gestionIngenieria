@@ -14,7 +14,7 @@ CREATE OR ALTER VIEW lista_materias AS
 
 GO
 CREATE OR ALTER VIEW materias_aprobadas AS
-	SELECT codigo_materia, nombre, notaFinal
+	SELECT codigo_materia, nombre, notaFinal, anio
 	FROM [ingenieria_informatica].[materia]
 	WHERE id_estado = 4;
 
@@ -76,13 +76,32 @@ BEGIN
 		'Técnico Universitario en Desarrollo de Software' AS Titulo,
 		AVG(notaFinal) AS Promedio
 	FROM [ingenieria_informatica].[materia] 
-	WHERE anio < 3
+	WHERE anio < 4
 	UNION ALL
 	SELECT 
 		'Ingeniero Informático' AS Titulo,
 		AVG(notaFinal) AS Promedio
 	FROM [ingenieria_informatica].[materia]
 END
+
+GO
+CREATE OR ALTER PROCEDURE ver_avance_segun_titulo
+AS 
+BEGIN
+	SELECT 	
+		'Técnico Universitario en Desarrollo de Software' AS Titulo,
+		CONCAT(COUNT(codigo_materia), ' de 29') AS Avance,
+		CONCAT(ROUND(COUNT(codigo_materia) * 100 / 29, 2) , '% finalizado') AS Porcentaje
+	FROM materias_aprobadas
+	WHERE anio < 4
+	UNION ALL
+	SELECT 
+		'Ingeniero Informático' AS Titulo,
+		CONCAT(COUNT(codigo_materia), ' de 62') AS Avance,
+		CONCAT(ROUND(COUNT(codigo_materia) * 100 / 62, 2), '% finalizado') AS Porcentaje
+	FROM materias_aprobadas
+END
+
 
 
 exec habilitar_materias;
