@@ -56,16 +56,66 @@ GO
 CREATE OR ALTER PROCEDURE ver_progreso_por_ramas
 AS
 BEGIN
-	SELECT * FROM lista_materias 
-	ORDER BY RamaCarrera
+	WITH Ramas AS (
+        SELECT 
+            id_rama_materia,
+            CASE id_rama_materia
+                WHEN 1 THEN 'Ciencias Básicas'
+                WHEN 2 THEN 'Desarrollo de Software'
+                WHEN 3 THEN 'Infraestructura'
+                WHEN 4 THEN 'Programación'
+                WHEN 5 THEN 'Calidad y seguridad de la Información'
+                WHEN 6 THEN 'Gestión y complementarias'
+                WHEN 7 THEN 'Transversales'
+            END AS RamaCarrera
+        FROM ingenieria_informatica.materia
+        GROUP BY id_rama_materia
+    )
+    SELECT 
+        Ramas.RamaCarrera,
+        AVG(m.notaFinal)        AS Promedio,
+        COUNT(m.notaFinal)      AS MateriasAprobadas,
+        COUNT(m.codigo_materia) AS CantidadMaterias,
+		CONCAT(ROUND(COUNT(m.notaFinal) * 100 / COUNT(m.codigo_materia), 0), '%') AS Progreso
+    FROM ingenieria_informatica.materia m
+    INNER JOIN Ramas ON m.id_rama_materia = Ramas.id_rama_materia
+    GROUP BY Ramas.RamaCarrera
 END
 
 GO
 CREATE OR ALTER PROCEDURE ver_progreso_por_anio
 AS
 BEGIN
-	SELECT * FROM lista_materias 
-	ORDER BY anio;
+	WITH Anios AS (
+        SELECT 
+            anio,
+            CASE anio
+                WHEN 1 THEN 'Primero'
+                WHEN 2 THEN 'Segundo'
+                WHEN 3 THEN 'Tercero'
+                WHEN 4 THEN 'Cuarto'
+                WHEN 5 THEN 'Quinto'
+            END AS AnioCarrera
+        FROM ingenieria_informatica.materia
+        GROUP BY anio
+    )
+    SELECT 
+        Anios.AnioCarrera 		AS AñoCarrera,
+        AVG(m.notaFinal)        AS Promedio,
+        COUNT(m.notaFinal)      AS MateriasAprobadas,
+        COUNT(m.codigo_materia) AS CantidadMaterias,
+		CONCAT(ROUND(COUNT(m.notaFinal) * 100 / COUNT(m.codigo_materia), 0), '%') AS Progreso
+    FROM ingenieria_informatica.materia m
+    INNER JOIN Anios ON m.anio = anios.anio
+    GROUP BY Anios.AnioCarrera
+	ORDER BY
+		CASE Anios.AnioCarrera
+                WHEN 'Primero' THEN 1
+                WHEN 'Segundo' THEN 2
+                WHEN 'Tercero' THEN 3 
+                WHEN 'Cuarto'  THEN 4
+                WHEN 'Quinto'  THEN 5
+    	END
 END	
 
 GO
@@ -90,8 +140,8 @@ AS
 BEGIN
 	SELECT 	
 		'Técnico Universitario en Desarrollo de Software' AS Titulo,
-		CONCAT(COUNT(codigo_materia), ' de 29') AS Avance,
-		CONCAT(ROUND(COUNT(codigo_materia) * 100 / 29, 2) , '% finalizado') AS Porcentaje
+		CONCAT(COUNT(codigo_materia), ' de 42') AS Avance,
+		CONCAT(ROUND(COUNT(codigo_materia) * 100 / 42, 2) , '% finalizado') AS Porcentaje
 	FROM materias_aprobadas
 	WHERE anio < 4
 	UNION ALL
@@ -101,7 +151,5 @@ BEGIN
 		CONCAT(ROUND(COUNT(codigo_materia) * 100 / 62, 2), '% finalizado') AS Porcentaje
 	FROM materias_aprobadas
 END
-
-
 
 exec habilitar_materias;
