@@ -1,3 +1,4 @@
+USE Universidad;
 
 GO
 INSERT INTO [ingenieria_informatica].[rama_carrera]
