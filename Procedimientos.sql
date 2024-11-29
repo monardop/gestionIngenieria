@@ -253,6 +253,15 @@ BEGIN
 	END
 END
 
-
+GO
+CREATE OR ALTER PROCEDURE ver_historial
+AS
+BEGIN
+	SELECT 
+		fecha_log, nombre, descripcion,
+		COALESCE(notaFinal, '---') AS Nota	
+	FROM ver_historial_academico
+	ORDER BY descripcion;
+END
 
 exec habilitar_materias;
