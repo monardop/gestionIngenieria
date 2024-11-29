@@ -11,7 +11,14 @@ CREATE OR ALTER VIEW lista_materias AS
 	FROM [ingenieria_informatica].[materia] materia
 		JOIN [ingenieria_informatica].[rama_carrera] rc ON materia.id_rama_materia = rc.id
 		JOIN [ingenieria_informatica].[Informacion] info ON materia.id_estado = info.id
-	
+
+GO
+CREATE OR ALTER VIEW materias_aprobadas AS
+	SELECT nombre, notaFinal
+	FROM [ingenieria_informatica].[materia]
+	WHERE id_estado = 4;
+
+
 GO 
 CREATE OR ALTER PROCEDURE habilitar_materias
 AS 
@@ -62,5 +69,3 @@ BEGIN
 END	
 
 exec habilitar_materias;
-
-exec ver_progreso_por_ramas;
