@@ -11,7 +11,7 @@ GO
 USE Universidad;
 
 GO 
-IF NOT EXISTS (SELECT * FROM sys.schemas WHERE name="ingenieria_informatica")
+IF NOT EXISTS (SELECT * FROM sys.schemas WHERE name='ingenieria_informatica')
 BEGIN 
     EXEC('CREATE SCHEMA ingenieria_informatica')
 END 
@@ -23,7 +23,7 @@ BEGIN
     CREATE TABLE [ingenieria_informatica].[rama_carrera]
     (
         id 					INT 		NOT NULL 	IDENTITY,
-        branch_description 	VARCHAR(70) NOT NULL,
+        nombre 	            VARCHAR(70) NOT NULL,
         CONSTRAINT PK_id_rama_carrera
             PRIMARY KEY(id)
     );
