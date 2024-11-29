@@ -14,7 +14,7 @@ CREATE OR ALTER VIEW lista_materias AS
 
 GO
 CREATE OR ALTER VIEW materias_aprobadas AS
-	SELECT nombre, notaFinal
+	SELECT codigo_materia, nombre, notaFinal
 	FROM [ingenieria_informatica].[materia]
 	WHERE id_estado = 4;
 
@@ -67,5 +67,22 @@ BEGIN
 	SELECT * FROM lista_materias 
 	ORDER BY anio;
 END	
+
+GO
+CREATE OR ALTER PROCEDURE ver_promedio
+AS 
+BEGIN
+	SELECT 	
+		'Técnico Universitario en Desarrollo de Software' AS Titulo,
+		AVG(notaFinal) AS Promedio
+	FROM [ingenieria_informatica].[materia] 
+	WHERE anio < 3
+	UNION ALL
+	SELECT 
+		'Ingeniero Informático' AS Titulo,
+		AVG(notaFinal) AS Promedio
+	FROM [ingenieria_informatica].[materia]
+END
+
 
 exec habilitar_materias;
