@@ -345,4 +345,15 @@ BEGIN
 			codigo_materia = @codMateria
 END
 
+GO
+CREATE OR ALTER PROCEDURE ver_resumen_historial
+AS
+BEGIN
+	SELECT 
+		descripcion,
+		COUNT(nombre) AS Cantidad
+	FROM ver_historial_academico
+	GROUP BY descripcion;
+END
+
 exec habilitar_materias;
