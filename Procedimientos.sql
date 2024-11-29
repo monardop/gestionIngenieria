@@ -48,7 +48,7 @@ BEGIN
 END
 
 GO
-CREATE OR ALTER PROCEDURE MateriaAprobada
+CREATE OR ALTER PROCEDURE Materia_Aprobada
 	@codMateria INT,
 	@nota		INT
 AS
@@ -237,7 +237,7 @@ BEGIN
 		ELSE IF @Condicion = 6 or @Condicion = 7
 		BEGIN
 				BEGIN TRY
-					EXEC MateriaAprobada @codMateria, @Nota;
+					EXEC Materia_Aprobada @codMateria, @Nota;
 				END TRY
 				BEGIN CATCH
 					RAISERROR('Los parametros ingresados fueron erróneos.',12,1);
@@ -329,7 +329,7 @@ BEGIN
 	ELSE IF @estado = 6 -- Promocionada
 		BEGIN
 			BEGIN TRY
-				EXEC MateriaAprobada @codMateria, @Nota;
+				EXEC Materia_Aprobada @codMateria, @Nota;
 			END TRY
 			BEGIN CATCH
 				RAISERROR('Los parametros ingresados fueron erróneos.',12,1);
