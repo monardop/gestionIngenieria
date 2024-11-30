@@ -83,6 +83,8 @@ gestorIngenieria/
 ├── Procedimientos.sql
 ├── Readme.md
 ```
+### Estructura de la base de datos Universidad
+![](https://github.com/monardop/gestionIngenieria/blob/main/Documentacion/DER.jpg)
 
 ## **Tecnologías Utilizadas**
 - **Base de Datos:** Microsoft SQL Server
