@@ -54,14 +54,15 @@ Procedimientos.sql
 ### Funciones
 > [!important]
 > - Las fechas van en formato ISO, es decir yyyy-mm-dd. Ejemplo (22 de julio del 1997 -> 1997-07-22)
-> - Condición / estado cumplen con lo siguiente:
->  - Materia a final                 = 5
->  - Promoción                       = 6
->  - Final Aprobado                  = 7
->  - Final desaprobado               = 8
->  - Materia recursada / desaprobada = 9
->  - Materia Abandonada              = 10
 > - La nota no puede ser menor que 4 (cuatro) ni mayor que 10 (diez)
+> - Condición / estado cumplen con lo siguiente:
+>    - Materia a final                 = 5
+>    - Promoción                       = 6
+>    - Final Aprobado                  = 7
+>    - Final desaprobado               = 8
+>    - Materia recursada / desaprobada = 9
+>    - Materia Abandonada              = 10
+
 
 1. `EXEC generar_registro_historial codMateria, fecha, condicion, nota`
   -  Fecha es un parámetro opcional, de no ponerlo se asigna la fecha del día del ingreso. Con nota pasa lo mismo, cabe destacar que si la condición es de final aprobado (7) o promoción (6), esta función no tendrá validez.
