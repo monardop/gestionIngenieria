@@ -365,4 +365,35 @@ BEGIN
 	GROUP BY descripcion;
 END
 
+GO
+CREATE OR ALTER PROCEDURE examen_rendido
+	@codMateria INT,
+	@nota INT,
+	@fecha DATE
+AS
+BEGIN
+	IF NOT EXISTS (
+		SELECT 1 
+		FROM [ingenieria_informatica].[materia] 
+		WHERE codigo_materia = @codMateria 
+			AND id_estado = 5
+	)
+	BEGIN
+		RAISERROR('Esa materia no está registrada para rendir final.',12,1);
+		RETURN;
+	END
+
+	IF  @nota >= 4
+	BEGIN
+		EXEC generar_registro_historial @codMateria, @fecha, 7, @nota;
+	END
+	ELSE 
+	BEGIN
+		EXEC generar_registro_historial @codMateria, @fecha, 8, @nota;
+	END
+
+
+END
+
+
 exec habilitar_materias;
