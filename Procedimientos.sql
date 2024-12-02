@@ -398,13 +398,12 @@ CREATE OR ALTER PROCEDURE recomendar_materias
 AS
 BEGIN
 WITH MateriasHabilitadas AS (
-    -- Seleccionamos solo las materias habilitadas
     SELECT m.codigo_materia, m.nombre
     FROM ingenieria_informatica.materia m
     WHERE m.id_estado = 2
 ),
 ImpactoCorrelativas AS (
-    -- Calculamos cuántas materias dependen de cada materia habilitada
+    -- Calculo cuántas materias dependen de cada materia habilitada
     SELECT 
         mc.codigo_materia_correlativa AS MateriaHabilitada, 
         COUNT(mc.codigo_materia) AS MateriasDesbloqueadas
@@ -413,7 +412,7 @@ ImpactoCorrelativas AS (
         ON mc.codigo_materia_correlativa = mh.codigo_materia
     GROUP BY mc.codigo_materia_correlativa
 )
--- Mostramos las materias habilitadas ordenadas por impacto
+-- Muestro las materias habilitadas ordenadas por impacto
 SELECT 
     mh.codigo_materia AS CodigoMateria,
     mh.nombre AS Materia,
