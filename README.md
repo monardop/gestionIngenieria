@@ -40,9 +40,38 @@ Procedimientos.sql
 
 ## **Uso**
 
+> [!important]
+> Asegurarse de ejecutar primero `USE Universidad` para poder usar los comandos.
+
+### Vistas y resúmenes
 - `EXEC ver_promedio;`: devuelve una tabla donde puedes ver el promedio según el título intermedio y el título final.
 - `EXEC ver_avance_segun_titulo;`: devuelve una tabla donde muestra el porcentaje de materias aprobadas según el título, además de las materias restantes y totales.
-- En proceso 
+- `EXEC ver_progreso_por_ramas` Separa por ramas las estadísticas
+- `EXEC ver_progreso_por_anio`  Separa por años las estadísticas
+- `EXEC ver_materias_adeudadas` Muestra las materias que no figuren como aprobadas
+- `EXEC ver_historial` Muestra una vista del historial académico
+- `EXEC ver_resumen_historial` Devuelve un resumen agrupado por estados del historial académico (Cantidad de finales aprobados, desaprobados, promociones, etc)
+### Funciones
+> [!important]
+> - Las fechas van en formato ISO, es decir yyyy-mm-dd. Ejemplo (22 de julio del 1997 -> 1997-07-22)
+> - La nota no puede ser menor que 4 (cuatro) ni mayor que 10 (diez)
+> - Condición / estado cumplen con lo siguiente:
+>    - Materia a final                 = 5
+>    - Promoción                       = 6
+>    - Final Aprobado                  = 7
+>    - Final desaprobado               = 8
+>    - Materia recursada / desaprobada = 9
+>    - Materia Abandonada              = 10
+
+
+1. `EXEC generar_registro_historial codMateria, fecha, condicion, nota`
+  -  Fecha es un parámetro opcional, de no ponerlo se asigna la fecha del día del ingreso. Con nota pasa lo mismo, cabe destacar que si la condición es de final aprobado (7) o promoción (6), esta función no tendrá validez.
+  -  Esta función guarda en el historial académico una entrada, de ser necesario guarda en la planilla principal. Los estados que modifican la planilla principal serán (5,6,7), dado que son los que dan por aprobada la materia o regularizan. Que la materia figure como regularizada/aprobada permite que las correlativas sean eliminadas y quienes dependan de esta materia puedan figurar como "Habilitadas"
+2. `EXEC set_materia_en_curso codMateria`
+  - Esta función me permite establecer una materia con el estado "En curso", es decir, establecer que actualmente estoy cursando la materia. 
+3. `EXEC finalizar_materia_cursada codMateria, estado, nota, fecha`
+  - Puedo no pasar la nota de no ser necesario, solo aplica en caso de que registre el estado 6
+  - Como indica el nombre, esta función buscará una materia que haya sido registrada previamente como "en curso" utilizando la función anterior (2), por lo que, en caso de no haberlo hecho, usar directamente la función 1. Una vez encontrada la entrada, la modificará y establecerá el nuevo estado. En caso de ser aprobada, actualizará la planilla principal también.
 
 ## **Estructura del Proyecto**
 ```plaintext
@@ -54,6 +83,8 @@ gestorIngenieria/
 ├── Procedimientos.sql
 ├── Readme.md
 ```
+### Estructura de la base de datos Universidad
+![](https://github.com/monardop/gestionIngenieria/blob/main/Documentacion/DER.jpg)
 
 ## **Tecnologías Utilizadas**
 - **Base de Datos:** Microsoft SQL Server
