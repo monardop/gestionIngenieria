@@ -329,7 +329,7 @@ BEGIN
 	ELSE IF @estado = 6 -- Promocionada
 		BEGIN
 			BEGIN TRY
-				EXEC Materia_Aprobada @codMateria, @Nota;
+				EXEC Materia_Aprobada @codMateria, @nota;
 			END TRY
 			BEGIN CATCH
 				RAISERROR('Los parametros ingresados fueron erróneos.',12,1);
@@ -337,6 +337,15 @@ BEGIN
 			END CATCH
 		END
 	
+	ELSE 
+		BEGIN
+		UPDATE [ingenieria_informatica].[materia]
+			SET 
+				id_estado = 2
+			WHERE 
+				codigo_materia = @codMateria
+		END
+
 	UPDATE [ingenieria_informatica].[historia_academica]
 		SET 
 			fecha_log = @FechaFinalizada,
