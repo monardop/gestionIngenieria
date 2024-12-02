@@ -391,9 +391,37 @@ BEGIN
 	BEGIN
 		EXEC generar_registro_historial @codMateria, @fecha, 8, @nota;
 	END
-
-
 END
 
+GO
+CREATE OR ALTER PROCEDURE recomendar_materias
+AS
+BEGIN
+WITH MateriasHabilitadas AS (
+    -- Seleccionamos solo las materias habilitadas
+    SELECT m.codigo_materia, m.nombre
+    FROM ingenieria_informatica.materia m
+    WHERE m.id_estado = 2
+),
+ImpactoCorrelativas AS (
+    -- Calculamos cuántas materias dependen de cada materia habilitada
+    SELECT 
+        mc.codigo_materia_correlativa AS MateriaHabilitada, 
+        COUNT(mc.codigo_materia) AS MateriasDesbloqueadas
+    FROM ingenieria_informatica.correlativa mc
+    JOIN MateriasHabilitadas mh
+        ON mc.codigo_materia_correlativa = mh.codigo_materia
+    GROUP BY mc.codigo_materia_correlativa
+)
+-- Mostramos las materias habilitadas ordenadas por impacto
+SELECT 
+    mh.codigo_materia AS CodigoMateria,
+    mh.nombre AS Materia,
+    COALESCE(ic.MateriasDesbloqueadas, 0) AS MateriasDesbloqueadas
+FROM MateriasHabilitadas mh
+LEFT JOIN ImpactoCorrelativas ic
+    ON mh.codigo_materia = ic.MateriaHabilitada
+ORDER BY MateriasDesbloqueadas DESC, mh.nombre;
+END
 
 exec habilitar_materias;
