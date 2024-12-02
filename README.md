@@ -51,6 +51,8 @@ Procedimientos.sql
 - `EXEC ver_materias_adeudadas` Muestra las materias que no figuren como aprobadas
 - `EXEC ver_historial` Muestra una vista del historial académico
 - `EXEC ver_resumen_historial` Devuelve un resumen agrupado por estados del historial académico (Cantidad de finales aprobados, desaprobados, promociones, etc)
+-  `EXEC recomendar_materias` Devuelve una tabla ordenada con base a cuántas materias habilitaría si curso alguna de las habilitadas. Es decir, ordena las materias habilitadas priorizando las que desbloquean más para la próxima cursada.
+## **Estructura del Proyecto**
 ### Funciones
 > [!important]
 > - Las fechas van en formato ISO, es decir yyyy-mm-dd. Ejemplo (22 de julio del 1997 -> 1997-07-22)
@@ -72,8 +74,9 @@ Procedimientos.sql
 3. `EXEC finalizar_materia_cursada codMateria, estado, nota, fecha`
   - Puedo no pasar la nota de no ser necesario, solo aplica en caso de que registre el estado 6
   - Como indica el nombre, esta función buscará una materia que haya sido registrada previamente como "en curso" utilizando la función anterior (2), por lo que, en caso de no haberlo hecho, usar directamente la función 1. Una vez encontrada la entrada, la modificará y establecerá el nuevo estado. En caso de ser aprobada, actualizará la planilla principal también.
-
-## **Estructura del Proyecto**
+4. `EXEC examen_rendido codMateria, nota, fecha`
+  - Si la materia no figura como regularizada, no podrá ejecutarse esta función.
+  - Genera un registro en el historial académico y, si fue aprobado, registra la materia como aprobada
 ```plaintext
 gestorIngenieria/ 
 ├── Documentacion
