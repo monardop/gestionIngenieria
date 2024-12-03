@@ -77,6 +77,9 @@ Procedimientos.sql
 4. `EXEC examen_rendido codMateria, nota, fecha`
   - Si la materia no figura como regularizada, no podrá ejecutarse esta función.
   - Genera un registro en el historial académico y, si fue aprobado, registra la materia como aprobada
+5. `EXEC materia_que_habilita @codigoMateria`
+  - Me muestra las materias que habilita la materia que ingreso. Es una función pensada para complementar a `EXEC recomendar_materias`.
+
 ```plaintext
 gestorIngenieria/ 
 ├── Documentacion
