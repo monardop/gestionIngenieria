@@ -423,4 +423,19 @@ LEFT JOIN ImpactoCorrelativas ic
 ORDER BY MateriasDesbloqueadas DESC, mh.nombre;
 END
 
+GO 
+CREATE OR ALTER PROCEDURE materia_que_habilita 
+	@codMateria INT
+AS
+BEGIN
+	WITH materias AS(
+		SELECT codigo_materia 
+		FROM ingenieria_informatica.correlativa
+		WHERE codigo_materia_correlativa = @codMateria
+	)
+	SELECT iim.codigo_materia,iim.nombre
+	FROM ingenieria_informatica.materia iim
+	JOIN materias tam ON tam.codigo_materia = iim.codigo_materia
+END
+
 exec habilitar_materias;
