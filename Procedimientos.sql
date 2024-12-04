@@ -438,4 +438,21 @@ BEGIN
 	JOIN materias tam ON tam.codigo_materia = iim.codigo_materia
 END
 
+GO
+CREATE OR ALTER PROCEDURE ver_materias_disponibles
+AS
+BEGIN
+	SELECT
+		materia.codigo_materia AS Codigo,
+		rc.nombre AS RamaCarrera ,
+		materia.nombre NombreMateria,
+		info.descripcion as EstadoMateria,
+		materia.anio Año
+	FROM [ingenieria_informatica].[materia] materia
+		JOIN [ingenieria_informatica].[rama_carrera] rc ON materia.id_rama_materia = rc.id
+		JOIN [ingenieria_informatica].[Informacion] info ON materia.id_estado = info.id
+	WHERE materia.id_estado IN (2, 5)
+	ORDER BY anio, EstadoMateria
+END
+
 exec habilitar_materias;

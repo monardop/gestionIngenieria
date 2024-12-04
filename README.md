@@ -52,7 +52,8 @@ Procedimientos.sql
 - `EXEC ver_historial` Muestra una vista del historial académico
 - `EXEC ver_resumen_historial` Devuelve un resumen agrupado por estados del historial académico (Cantidad de finales aprobados, desaprobados, promociones, etc)
 -  `EXEC recomendar_materias` Devuelve una tabla ordenada con base a cuántas materias habilitaría si curso alguna de las habilitadas. Es decir, ordena las materias habilitadas priorizando las que desbloquean más para la próxima cursada.
-## **Estructura del Proyecto**
+- `EXEC ver_materias_disponibles` Me muestra las materias regularizadas o habilitadas ordenadas por año.
+
 ### Funciones
 > [!important]
 > - Las fechas van en formato ISO, es decir yyyy-mm-dd. Ejemplo (22 de julio del 1997 -> 1997-07-22)
@@ -80,6 +81,7 @@ Procedimientos.sql
 5. `EXEC materia_que_habilita @codigoMateria`
   - Me muestra las materias que habilita la materia que ingreso. Es una función pensada para complementar a `EXEC recomendar_materias`.
 
+## **Estructura del Proyecto**
 ```plaintext
 gestorIngenieria/ 
 ├── Documentacion
