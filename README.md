@@ -53,6 +53,7 @@ Procedimientos.sql
 - `EXEC ver_resumen_historial` Devuelve un resumen agrupado por estados del historial académico (Cantidad de finales aprobados, desaprobados, promociones, etc)
 -  `EXEC recomendar_materias` Devuelve una tabla ordenada con base a cuántas materias habilitaría si curso alguna de las habilitadas. Es decir, ordena las materias habilitadas priorizando las que desbloquean más para la próxima cursada.
 - `EXEC ver_materias_disponibles` Me muestra las materias regularizadas o habilitadas ordenadas por año.
+- `EXEC ver_resumen_anual` Me muestra cada una de las categorías resumidas de forma anual. Esto puede ser útil para ver un progreso y hacer una comparativa de otros años.
 
 ### Funciones
 > [!important]
