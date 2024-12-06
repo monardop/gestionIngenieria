@@ -455,4 +455,21 @@ BEGIN
 	ORDER BY anio, EstadoMateria
 END
 
+GO 
+CREATE OR ALTER PROCEDURE ver_resumen_anual
+AS 
+BEGIN
+	SELECT 
+		YEAR(ha.fecha_log) AS Año,
+		d.descripcion      AS Descripcion,
+		COUNT(*)           AS Cantidad
+	FROM ingenieria_informatica.historia_academica  ha
+	JOIN ingenieria_informatica.Informacion d ON ha.id_descripcion = d.id
+	GROUP BY 
+		YEAR(ha.fecha_log),
+		d.descripcion
+	ORDER BY
+		Año, d.descripcion
+END
+
 exec habilitar_materias;
